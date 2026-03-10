@@ -624,31 +624,111 @@ function setLang(l){
 }
 
 // ============================================================
-// PERSISTÈNCIA localStorage
+// FIREBASE + PERSISTÈNCIA
 // ============================================================
 const LS_KEY='totmenyspadel_v4';
+let db=null; // Firebase Firestore instance
+let firebaseReady=false;
+
+// Dades que es sincronitzen al núvol
+function getStateObj(){
+  return {players,jornades,avisos,nextId,disponibilitatPerJornada,convocatoriaGuardada,fases,faseActiva};
+}
+
+function applyState(s){
+  if(s.players&&s.players.length)players=s.players;
+  if(s.jornades&&s.jornades.length)jornades=s.jornades;
+  if(s.avisos)avisos=s.avisos;
+  if(s.nextId)nextId=s.nextId;
+  if(s.disponibilitatPerJornada)disponibilitatPerJornada=s.disponibilitatPerJornada;
+  if(s.convocatoriaGuardada)convocatoriaGuardada=s.convocatoriaGuardada;
+  if(s.fases&&s.fases.length)fases=s.fases;
+  if(s.faseActiva)faseActiva=s.faseActiva;
+}
+
+// Guarda localment sempre (ràpid) + al núvol si Firebase disponible
 function saveState(){
-  try{localStorage.setItem(LS_KEY,JSON.stringify({players,jornades,avisos,nextId,disponibilitatPerJornada,convocatoriaGuardada,fases,faseActiva}));}
-  catch(e){console.warn('save error',e);}
+  const state=getStateObj();
+  // localStorage com a backup offline
+  try{localStorage.setItem(LS_KEY,JSON.stringify(state));}catch(e){}
+  // Firebase com a font principal
+  if(firebaseReady&&db){
+    db.collection('equip').doc('dades').set(state)
+      .catch(e=>console.warn('Firebase save error:',e));
+  }
 }
+
+// Carrega l'idioma sempre des de localStorage (és preferència personal)
+function loadLang(){
+  const l=localStorage.getItem('totmenyspadel_lang');
+  if(l)lang=l;
+}
+
+// Carrega dades: primer localStorage (instant), després Firebase (actualitza si hi ha noves dades)
 function loadState(){
+  loadLang();
+  // 1. Carrega localStorage immediatament per no bloquejar la UI
   try{
-    const l=localStorage.getItem('totmenyspadel_lang');
-    if(l)lang=l;
     const raw=localStorage.getItem(LS_KEY);
-    if(!raw)return;
-    const s=JSON.parse(raw);
-    if(s.players&&s.players.length)players=s.players;
-    if(s.jornades&&s.jornades.length)jornades=s.jornades;
-    if(s.avisos)avisos=s.avisos;
-    if(s.nextId)nextId=s.nextId;
-    if(s.disponibilitatPerJornada)disponibilitatPerJornada=s.disponibilitatPerJornada;
-    if(s.convocatoriaGuardada)convocatoriaGuardada=s.convocatoriaGuardada;
-    if(s.fases&&s.fases.length)fases=s.fases;
-    if(s.faseActiva)faseActiva=s.faseActiva;
-  }catch(e){console.warn('load error',e);}
+    if(raw)applyState(JSON.parse(raw));
+  }catch(e){console.warn('localStorage load error',e);}
 }
-function clearState(){if(confirm(lang==='es'?'¿Seguro que quieres borrar todos los datos?':'Segur que vols esborrar totes les dades guardades?')){localStorage.removeItem(LS_KEY);location.reload();}}
+
+async function loadFromFirebase(){
+  if(!firebaseReady||!db)return;
+  try{
+    const doc=await db.collection('equip').doc('dades').get();
+    if(doc.exists){
+      applyState(doc.data());
+      // Actualitza localStorage amb les dades del núvol
+      try{localStorage.setItem(LS_KEY,JSON.stringify(doc.data()));}catch(e){}
+      // Re-renderitza la secció activa amb les dades fresques
+      const active=document.querySelector('.section.active');
+      if(active){
+        const sec=active.id.replace('sec-','');
+        ({dashboard:renderDashboard,plantilla:renderPlantilla,calendari:renderCalendari,
+          estadistiques:renderStats,convocatoria:renderConvocatoria,avisos:renderAvisos}[sec]||function(){})();
+      }
+      showSyncBadge('☁️ Sincronitzat');
+    }
+  }catch(e){console.warn('Firebase load error:',e);showSyncBadge('📴 Offline');}
+}
+
+// Escolta canvis en temps real (tots els dispositius s'actualitzen al moment)
+function startRealtimeSync(){
+  if(!firebaseReady||!db)return;
+  db.collection('equip').doc('dades').onSnapshot(doc=>{
+    if(doc.exists&&doc.metadata.hasPendingWrites===false){
+      applyState(doc.data());
+      try{localStorage.setItem(LS_KEY,JSON.stringify(doc.data()));}catch(e){}
+      const active=document.querySelector('.section.active');
+      if(active){
+        const sec=active.id.replace('sec-','');
+        ({dashboard:renderDashboard,plantilla:renderPlantilla,calendari:renderCalendari,
+          estadistiques:renderStats,convocatoria:renderConvocatoria,avisos:renderAvisos}[sec]||function(){})();
+      }
+    }
+  },e=>console.warn('Realtime sync error:',e));
+}
+
+function showSyncBadge(msg){
+  let badge=document.getElementById('sync-badge');
+  if(!badge){badge=document.createElement('div');badge.id='sync-badge';
+    badge.style.cssText='position:fixed;bottom:80px;right:16px;background:rgba(0,212,255,.15);border:1px solid var(--accent);border-radius:20px;padding:4px 12px;font-size:11px;color:var(--accent);z-index:999;transition:opacity 1s';
+    document.body.appendChild(badge);}
+  badge.textContent=msg;badge.style.opacity='1';
+  setTimeout(()=>{badge.style.opacity='0';},3000);
+}
+
+function clearState(){
+  if(!confirm(lang==='es'?'¿Seguro que quieres borrar todos los datos?':'Segur que vols esborrar totes les dades guardades?'))return;
+  localStorage.removeItem(LS_KEY);
+  if(firebaseReady&&db){
+    db.collection('equip').doc('dades').delete()
+      .then(()=>location.reload())
+      .catch(()=>location.reload());
+  }else{location.reload();}
+}
 
 // HELPERS
 // Calcula stats d'un jugador per fase (o totes les fases si faseId=null)
@@ -1507,6 +1587,32 @@ if('serviceWorker' in navigator){
       .then(()=>console.log('✅ SW registrat'))
       .catch(e=>console.warn('SW error:',e));
   });
+}
+</script>
+
+<!-- FIREBASE SDK -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyCndUKq-HxayFsN-chUyqBRP3RenX0fTtM",
+  authDomain: "totmenyspadel.firebaseapp.com",
+  projectId: "totmenyspadel",
+  storageBucket: "totmenyspadel.firebasestorage.app",
+  messagingSenderId: "1032173197828",
+  appId: "1:1032173197828:web:0cdc4bd9c19f14cb99b351"
+};
+
+try{
+  firebase.initializeApp(firebaseConfig);
+  db=firebase.firestore();
+  firebaseReady=true;
+  // Carrega les dades del núvol i activa la sincronització en temps real
+  loadFromFirebase().then(()=>startRealtimeSync());
+  console.log('✅ Firebase connectat');
+}catch(e){
+  console.warn('Firebase init error:',e);
+  showSyncBadge('📴 Mode offline');
 }
 </script>
 </body>
