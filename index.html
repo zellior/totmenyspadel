@@ -1385,7 +1385,7 @@ function toggleConv(id){
   selectedOption=null;customPairings=null;
   saveState();renderConvocatoria();
 }
-function scrollToSim(){document.getElementById('simulador-section')?.scrollIntoView({behavior:'smooth',block:'start'});}
+function scrollToSim(){renderOpcions();setTimeout(()=>document.getElementById('simulador-section')?.scrollIntoView({behavior:'smooth',block:'start'}),50);}
 
 function parellEquilibrada(a,b){if(a.pos==='Ambdós'||b.pos==='Ambdós')return true;return a.pos!==b.pos;}
 
@@ -1610,8 +1610,4 @@ try{
   console.log('✅ Firebase connectat');
 }catch(e){
   console.warn('Firebase init error:',e);
-  showSyncBadge('📴 Mode offline');
-}
-</script>
-</body>
-</html>
+  showSyncBadge('📴 Mode offl
