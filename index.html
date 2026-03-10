@@ -503,7 +503,8 @@ let avisos=[
 let captainMode=false,nextId=50,editingPlayer=null,pistaCurrent=null,jornCurrent=null;
 let convocats=[],convJornadaNum=null,selectedOption=null,customPairings=null;
 let disponibilitatPerJornada={};
-let convocatoriaGuardada={}; // { numJornada: { opcions:[], opcioTriada:0|null, parelles:[] } }
+let convocatoriaGuardada={};
+let _jornadaCarregada=null; // tracking de quina jornada hem carregat ja
 
 // Fases de la lliga
 let fases=[
@@ -1249,14 +1250,16 @@ function renderConvocatoria(){
   }
   const jorDisp=getJorDisp();
   if(!convJornadaNum||!jorDisp.find(j=>j.num===convJornadaNum))convJornadaNum=jorDisp.length?jorDisp[0].num:null;
-  // Carrega disponibilitat i opcions guardades per la jornada activa
-  if(convJornadaNum){
-    if(disponibilitatPerJornada[convJornadaNum])convocats=disponibilitatPerJornada[convJornadaNum];
-    else convocats=[];
+  // Carrega disponibilitat guardada NOMÉS quan canviem de jornada, no a cada re-render
+  if(convJornadaNum&&_jornadaCarregada!==convJornadaNum){
+    _jornadaCarregada=convJornadaNum;
+    convocats=disponibilitatPerJornada[convJornadaNum]?[...disponibilitatPerJornada[convJornadaNum]]:[];
     const cg=convocatoriaGuardada[convJornadaNum];
-    if(selectedOption===null&&cg&&cg.opcioTriada!=null&&cg.parellesTriades){
+    if(cg&&cg.opcioTriada!=null&&cg.parellesTriades){
       selectedOption=cg.opcioTriada;
       customPairings=cg.parellesTriades.map(p=>[...p]);
+    } else {
+      selectedOption=null;customPairings=null;
     }
   }
   const activeJ=jornades.find(j=>j.num===convJornadaNum);
@@ -1361,16 +1364,8 @@ function renderConvocatoria(){
 
 function changeConvJornada(num){
   convJornadaNum=num;
-  // Carrega la disponibilitat guardada per aquesta jornada
-  convocats=disponibilitatPerJornada[num]?[...disponibilitatPerJornada[num]]:[];
-  // Carrega l'opció triada guardada
-  const cg=convocatoriaGuardada[num];
-  if(cg&&cg.opcioTriada!=null&&cg.parellesTriades){
-    selectedOption=cg.opcioTriada;
-    customPairings=cg.parellesTriades.map(p=>[...p]);
-  }else{
-    selectedOption=null;customPairings=null;
-  }
+  _jornadaCarregada=null; // força recàrrega de dades per la nova jornada
+  selectedOption=null;customPairings=null;convocats=[];
   window.reservaSelected=[null,null];
   renderConvocatoria();
 }
@@ -1379,6 +1374,7 @@ function resetConv(){
   convocats=[];
   if(convJornadaNum)disponibilitatPerJornada[convJornadaNum]=[];
   selectedOption=null;customPairings=null;window.reservaSelected=[null,null];
+  _jornadaCarregada=convJornadaNum; // marca com carregada (buida)
   saveState();renderConvocatoria();
 }
 
