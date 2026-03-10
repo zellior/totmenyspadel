@@ -680,14 +680,14 @@ async function loadFromFirebase(){
     const doc=await db.collection('equip').doc('dades').get();
     if(doc.exists){
       applyState(doc.data());
-      // Actualitza localStorage amb les dades del núvol
       try{localStorage.setItem(LS_KEY,JSON.stringify(doc.data()));}catch(e){}
-      // Re-renderitza la secció activa amb les dades fresques
       const active=document.querySelector('.section.active');
       if(active){
         const sec=active.id.replace('sec-','');
+        // NO re-renderitzem convocatoria — l'usuari pot tenir seleccions en curs
+        if(sec==='convocatoria')return;
         ({dashboard:renderDashboard,plantilla:renderPlantilla,calendari:renderCalendari,
-          estadistiques:renderStats,convocatoria:renderConvocatoria,avisos:renderAvisos}[sec]||function(){})();
+          estadistiques:renderStats,avisos:renderAvisos}[sec]||function(){})();
       }
       showSyncBadge('☁️ Sincronitzat');
     }
@@ -704,8 +704,10 @@ function startRealtimeSync(){
       const active=document.querySelector('.section.active');
       if(active){
         const sec=active.id.replace('sec-','');
+        // NO re-renderitzem convocatoria des del listener — l'usuari pot tenir seleccions en curs
+        if(sec==='convocatoria')return;
         ({dashboard:renderDashboard,plantilla:renderPlantilla,calendari:renderCalendari,
-          estadistiques:renderStats,convocatoria:renderConvocatoria,avisos:renderAvisos}[sec]||function(){})();
+          estadistiques:renderStats,avisos:renderAvisos}[sec]||function(){})();
       }
     }
   },e=>console.warn('Realtime sync error:',e));
