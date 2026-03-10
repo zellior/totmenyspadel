@@ -1290,11 +1290,9 @@ function renderConvocatoria(){
       <div style="display:flex;align-items:center;gap:10px">
         <div style="text-align:right"><div style="font-family:'Bebas Neue',sans-serif;font-size:32px;color:var(--accent);line-height:1">${convocats.length}</div><div style="font-size:10px;color:var(--muted);letter-spacing:1px">DISPONIBLES</div></div>
         <button class="btn btn-secondary btn-sm" onclick="resetConv()">Netejar</button>
-        ${convocats.length>=6?`<button class="btn btn-primary btn-sm" onclick="scrollToSim()">Simular ↓</button>`:''}
       </div>
     </div>
     <div style="font-size:10px;text-transform:uppercase;letter-spacing:2px;color:var(--muted);margin-bottom:10px">Clica per seleccionar jugadors disponibles</div>
-    <!-- Capçaleres columnes -->
     <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:4px;text-align:center">
       <div style="font-size:9px;letter-spacing:2px;color:var(--accent2);text-transform:uppercase;font-weight:700">◀ Revés</div>
       <div style="font-size:9px;letter-spacing:2px;color:var(--green);text-transform:uppercase;font-weight:700">Ambdós</div>
@@ -1303,23 +1301,9 @@ function renderConvocatoria(){
     <div class="conv-players" id="conv-grid"></div>
     ${convocats.length>0&&convocats.length<6?`<div style="margin-top:12px;padding:10px 14px;background:rgba(255,107,53,.08);border:1px solid rgba(255,107,53,.2);border-radius:8px;font-size:12px;color:var(--accent2)">⚠️ Necessites mínim 6 jugadors (ara: ${convocats.length})</div>`:''}
   </div>
-  ${convocats.length>=6?`<div id="simulador-section">
-    <div class="card" style="margin-bottom:16px">
-      <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:1px;margin-bottom:4px">PAS 2 · <span style="color:var(--accent)">SIMULADOR D'OPCIONS</span></div>
-      <div style="font-size:12px;color:var(--muted);margin-bottom:18px">3 combinacions Drive+Revés equilibrades · Pista 1 = màxims punts</div>
-      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px" id="opcions-grid"></div>
-    </div>
-    <div id="confirmacio-section" style="display:${selectedOption!==null?'block':'none'}">
-      <div class="card">
-        <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:1px;margin-bottom:4px">PAS 3 · <span style="color:var(--green)">CONFIRMACIÓ</span></div>
-        <div style="font-size:12px;color:var(--muted);margin-bottom:16px">Revisa i ajusta manualment si cal.</div>
-        <div id="confirmacio-body"></div>
-        <div class="btn-row" style="margin-top:16px">
-          <button class="btn btn-primary" onclick="confirmarConvocatoria()">✅ Confirmar i assignar al calendari</button>
-          <button class="btn btn-secondary" onclick="selectedOption=null;document.getElementById('confirmacio-section').style.display='none'">Cancel·lar</button>
-        </div>
-      </div>
-    </div>
+  ${convocats.length>=6?`<div id="opcions-section">
+    <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:1px;margin-bottom:16px">PAS 2 · <span style="color:var(--accent)">OPCIONS DE CONVOCATÒRIA</span></div>
+    <div style="display:flex;flex-direction:column;gap:16px" id="opcions-manuals"></div>
   </div>`:''}`;
 
   content.innerHTML=html;
@@ -1358,13 +1342,12 @@ function renderConvocatoria(){
         <div class="ck">✓</div>
       </div>`:'<div style="visibility:hidden" class="conv-card"></div>').join('');
   }
-  if(convocats.length>=6)renderOpcions();
-  if(selectedOption!==null)renderConfirmacio();
+  if(convocats.length>=6)renderOpcionsManuals();
 }
 
 function changeConvJornada(num){
   convJornadaNum=num;
-  _jornadaCarregada=null; // força recàrrega de dades per la nova jornada
+  _jornadaCarregada=null;
   selectedOption=null;customPairings=null;convocats=[];
   window.reservaSelected=[null,null];
   renderConvocatoria();
@@ -1374,170 +1357,122 @@ function resetConv(){
   convocats=[];
   if(convJornadaNum)disponibilitatPerJornada[convJornadaNum]=[];
   selectedOption=null;customPairings=null;window.reservaSelected=[null,null];
-  _jornadaCarregada=convJornadaNum; // marca com carregada (buida)
+  _jornadaCarregada=convJornadaNum;
   saveState();renderConvocatoria();
 }
 
 function toggleConv(id){
   convocats.includes(id)?convocats=convocats.filter(x=>x!==id):convocats.push(id);
-  // Guarda disponibilitat per aquesta jornada
   if(convJornadaNum)disponibilitatPerJornada[convJornadaNum]=[...convocats];
-  selectedOption=null;customPairings=null;
+  _jornadaCarregada=convJornadaNum;
   saveState();renderConvocatoria();
 }
-function scrollToSim(){renderOpcions();setTimeout(()=>document.getElementById('simulador-section')?.scrollIntoView({behavior:'smooth',block:'start'}),50);}
 
 function parellEquilibrada(a,b){if(a.pos==='Ambdós'||b.pos==='Ambdós')return true;return a.pos!==b.pos;}
 
-function buildBalancedPairs(pool){
-  const used=new Set(),pairs=[];
-  const drPool=pool.filter(p=>p.pos!=='Revés').sort((a,b)=>b.pts-a.pts);
-  const rvPool=pool.filter(p=>p.pos!=='Drive').sort((a,b)=>b.pts-a.pts);
-  for(let i=0;i<3;i++){
-    let d=null,r=null;
-    for(const p of drPool){if(!used.has(p.id)){d=p;break;}}
-    for(const p of rvPool){if(!used.has(p.id)&&p.id!==d?.id){r=p;break;}}
-    if(d&&r){used.add(d.id);used.add(r.id);pairs.push([d,r]);}
-    else{const rem=pool.filter(p=>!used.has(p.id));if(rem.length>=2){used.add(rem[0].id);used.add(rem[1].id);pairs.push([rem[0],rem[1]]);}}
-  }
-  return pairs;
+function getOpcioData(oi){
+  if(!convocatoriaGuardada[convJornadaNum])convocatoriaGuardada[convJornadaNum]={};
+  const cg=convocatoriaGuardada[convJornadaNum];
+  if(!cg.opcionsManuals)cg.opcionsManuals=[null,null,null];
+  return cg.opcionsManuals[oi];
 }
 
-function generateOptions(ids){
-  const sorted=ids.map(id=>players.find(p=>p.id===id)).filter(Boolean).sort((a,b)=>b.pts-a.pts);
-  const top=sorted.slice(0,6),reserva=sorted.slice(6,8);
-  const optA=buildBalancedPairs(top);
-  const rv2=top.filter(p=>p.pos!=='Drive').sort((a,b)=>b.pts-a.pts);
-  const dr2=top.filter(p=>p.pos!=='Revés').sort((a,b)=>b.pts-a.pts);
-  if(rv2.length>=2)[rv2[0],rv2[1]]=[rv2[1],rv2[0]];
-  const poolB=[...top].sort((a,b)=>{const ai=dr2.indexOf(a)>=0?dr2.indexOf(a)*2:rv2.indexOf(a)*2+1,bi=dr2.indexOf(b)>=0?dr2.indexOf(b)*2:rv2.indexOf(b)*2+1;return ai-bi;});
-  const optB=buildBalancedPairs(poolB);
-  const poolC=[...top];if(poolC.length>=4)[poolC[0],poolC[2]]=[poolC[2],poolC[0]];
-  const optC=buildBalancedPairs(poolC);
-  return {opts:[optA,optB,optC],reserva};
-}
-
-function pairPts(pair){return pair[0].pts+pair[1].pts;}
-
-function renderOpcions(){
-  const {opts,reserva}=generateOptions(convocats);
-  // Guarda les opcions generades per a aquesta jornada
-  if(convJornadaNum){
-    if(!convocatoriaGuardada[convJornadaNum])convocatoriaGuardada[convJornadaNum]={};
-    convocatoriaGuardada[convJornadaNum].opcions=opts.map(opt=>opt.map(par=>[par[0].id,par[1].id]));
-    convocatoriaGuardada[convJornadaNum].reservaIds=reserva.map(r=>r.id);
-    saveState();
-  }
-  const labels=['Opció A','Opció B','Opció C'];
-  const descs=['Equilibri Drive+Revés màxim','Variació: reves rotats','Variació: reforç pista 2'];
-  const grid=document.getElementById('opcions-grid');if(!grid)return;
-  grid.innerHTML=opts.map((opt,oi)=>`
-    <div class="card" style="border:2px solid ${selectedOption===oi?'var(--accent)':'var(--border)'};cursor:pointer;transition:all .25s;background:${selectedOption===oi?'rgba(0,212,255,.05)':'var(--surface)'};" onclick="selectOption(${oi})">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
-        <div style="font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:1px;color:${selectedOption===oi?'var(--accent)':'var(--text)'}">${labels[oi]}</div>
-        ${selectedOption===oi?'<span style="color:var(--accent)">✓</span>':''}
-      </div>
-      <div style="font-size:10px;color:var(--muted);margin-bottom:12px">${descs[oi]}</div>
-      ${opt.map((par,pi)=>{
-        const eq=parellEquilibrada(par[0],par[1]);
-        return `<div style="background:var(--surface2);border-radius:8px;padding:10px;margin-bottom:8px;border-left:3px solid ${eq?'var(--green)':'var(--accent2)'}">
-          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
-            <span style="font-size:9px;text-transform:uppercase;letter-spacing:2px;color:var(--muted)">Pista ${pi+1}</span>
-            <div style="display:flex;align-items:center;gap:4px">
-              <span style="font-size:9px;color:${eq?'var(--green)':'var(--accent2)'}">${eq?'✓':'⚠'}</span>
-              <span style="font-family:'Bebas Neue',sans-serif;font-size:15px;color:var(--gold)">${pairPts(par)}pts</span>
-            </div>
-          </div>
-          ${par.map(j=>`<div style="display:flex;align-items:center;gap:6px;margin-bottom:3px">
-            ${avImg(j,22)}<span style="font-size:11px;font-weight:500;flex:1;overflow:hidden;white-space:nowrap;text-overflow:ellipsis">${j.nom.split(' ').slice(0,2).join(' ')}</span>
-            <span class="badge ${posColor(j.pos)}" style="font-size:8px">${j.pos}</span>
-            <span style="font-family:'Bebas Neue',sans-serif;font-size:12px;color:var(--muted)">${j.pts}</span>
-          </div>`).join('')}
-        </div>`;
-      }).join('')}
-      ${reserva.length?`<div style="margin-top:4px;padding:6px 8px;background:var(--surface3);border-radius:6px;font-size:10px;color:var(--muted)">🔄 ${reserva.map(r=>r.alias+'('+r.pts+'pts)').join(' · ')}</div>`:''}
-    </div>`).join('');
-}
-
-function selectOption(oi){
-  selectedOption=oi;window.reservaSelected=[null,null];
-  const {opts}=generateOptions(convocats);
-  customPairings=opts[oi].map(par=>[par[0].id,par[1].id]);
-  // Guarda l'opció triada
-  if(convJornadaNum){
-    if(!convocatoriaGuardada[convJornadaNum])convocatoriaGuardada[convJornadaNum]={};
-    convocatoriaGuardada[convJornadaNum].opcioTriada=oi;
-    convocatoriaGuardada[convJornadaNum].parellesTriades=[...customPairings.map(p=>[...p])];
-    saveState();
-  }
-  renderOpcions();
-  document.getElementById('confirmacio-section').style.display='block';
-  renderConfirmacio();
-  setTimeout(()=>document.getElementById('confirmacio-section')?.scrollIntoView({behavior:'smooth',block:'start'}),100);
-}
-
-function renderConfirmacio(){
-  const body=document.getElementById('confirmacio-body');if(!body||!customPairings)return;
+function renderOpcionsManuals(){
+  const container=document.getElementById('opcions-manuals');
+  if(!container)return;
   const avail=convocats.map(id=>players.find(p=>p.id===id)).filter(Boolean).sort((a,b)=>b.pts-a.pts);
-  function mkOpts(selId){return avail.map(p=>`<option value="${p.id}" ${p.id===selId?'selected':''}>${p.nom.split(' ').slice(0,2).join(' ')} (${p.pts}pts · ${p.pos})</option>`).join('');}
-  const assignedIds=customPairings.flat();
-  const notAssigned=avail.filter(p=>!assignedIds.includes(p.id));
-  if(!window.reservaSelected)window.reservaSelected=[null,null];
-  window.reservaSelected=window.reservaSelected.map(id=>assignedIds.includes(id)?null:id);
+  const labels=['A','B','C'];
+  const colors=['var(--accent)','var(--green)','var(--gold)'];
 
-  body.innerHTML=`
-    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px" id="conf-pistes-grid">
-      ${customPairings.map((par,pi)=>{
-        const p0=players.find(x=>x.id===par[0]),p1=players.find(x=>x.id===par[1]);
-        const total=(p0?.pts||0)+(p1?.pts||0),eq=p0&&p1?parellEquilibrada(p0,p1):true;
-        return `<div style="background:var(--surface2);border-left:3px solid ${eq?'var(--green)':'var(--accent2)'};border-radius:10px;padding:14px">
-          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
-            <span style="font-size:10px;text-transform:uppercase;letter-spacing:2px;color:var(--muted)">Pista ${pi+1}</span>
-            <span style="font-family:'Bebas Neue',sans-serif;font-size:18px;color:var(--gold)">${total}pts</span>
-          </div>
-          <div class="fg" style="margin-bottom:8px"><label>Jugador 1</label><select onchange="updateCustomPair(${pi},0,this.value)">${mkOpts(par[0])}</select></div>
-          <div class="fg" style="margin-bottom:10px"><label>Jugador 2</label><select onchange="updateCustomPair(${pi},1,this.value)">${mkOpts(par[1])}</select></div>
-          <div style="padding:7px;background:var(--surface3);border-radius:6px;display:flex;align-items:center;gap:6px;flex-wrap:wrap">
-            <span class="badge ${posColor(p0?.pos||'Drive')}" style="font-size:9px">${p0?.pos||'—'}</span>
-            <span style="color:var(--muted)">+</span>
-            <span class="badge ${posColor(p1?.pos||'Drive')}" style="font-size:9px">${p1?.pos||'—'}</span>
-            <span style="margin-left:auto;font-size:10px;color:${eq?'var(--green)':'var(--accent2)'}">${eq?'✓ OK':'⚠ Mateixa pos.'}</span>
-          </div>
-        </div>`;
-      }).join('')}
-    </div>
-    <div style="background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:14px">
-      <div style="font-size:10px;text-transform:uppercase;letter-spacing:2px;color:var(--muted);margin-bottom:12px">🔄 Reserva (màxim 2)</div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+  container.innerHTML=labels.map((lbl,oi)=>{
+    const saved=getOpcioData(oi)||{pistes:[[null,null],[null,null],[null,null]],reserves:[null,null]};
+    function mkOpts(selId){
+      return `<option value="">— Selecciona —</option>`+
+        avail.map(p=>`<option value="${p.id}" ${p.id===selId?'selected':''}>${p.nom.split(' ').slice(0,2).join(' ')} · ${p.pts}pts · ${p.pos}</option>`).join('');
+    }
+    const pistesHTML=saved.pistes.map((par,pi)=>{
+      const p0=players.find(x=>x.id===par[0]);
+      const p1=players.find(x=>x.id===par[1]);
+      const total=(p0?.pts||0)+(p1?.pts||0);
+      const eq=p0&&p1?parellEquilibrada(p0,p1):true;
+      return `<div style="background:var(--surface2);border-left:3px solid ${p0&&p1?(eq?'var(--green)':'var(--accent2)'):'var(--border)'};border-radius:10px;padding:12px;margin-bottom:10px">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+          <span style="font-size:10px;text-transform:uppercase;letter-spacing:2px;color:var(--muted)">Pista ${pi+1}</span>
+          <span style="font-family:'Bebas Neue',sans-serif;font-size:16px;color:var(--gold)">${total?total+'pts':''}</span>
+        </div>
+        <div class="fg" style="margin-bottom:6px"><label>Jugador 1</label>
+          <select onchange="updateOpcio(${oi},${pi},0,this.value)">${mkOpts(par[0])}</select>
+        </div>
+        <div class="fg"><label>Jugador 2</label>
+          <select onchange="updateOpcio(${oi},${pi},1,this.value)">${mkOpts(par[1])}</select>
+        </div>
+        ${p0&&p1?`<div style="margin-top:8px;font-size:10px;color:${eq?'var(--green)':'var(--accent2)'}">
+          ${eq?'✓ Parella equilibrada':'⚠ Mateixa posició'}</div>`:''}
+      </div>`;
+    }).join('');
+
+    const resHTML=`<div style="background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:12px;margin-bottom:14px">
+      <div style="font-size:10px;text-transform:uppercase;letter-spacing:2px;color:var(--muted);margin-bottom:10px">🔄 Reserves</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
         ${[0,1].map(ri=>`<div class="fg"><label>Reserva ${ri+1}</label>
-          <select onchange="updateReserva(${ri},this.value)">
+          <select onchange="updateOpcioReserva(${oi},${ri},this.value)">
             <option value="">— Cap —</option>
-            ${avail.filter(p=>!assignedIds.includes(p.id)||window.reservaSelected[ri]===p.id)
-              .map(p=>`<option value="${p.id}" ${window.reservaSelected[ri]===p.id?'selected':''}>${p.nom.split(' ').slice(0,2).join(' ')} (${p.pts}pts)</option>`).join('')}
+            ${avail.map(p=>`<option value="${p.id}" ${p.id===saved.reserves[ri]?'selected':''}>${p.nom.split(' ').slice(0,2).join(' ')} · ${p.pts}pts</option>`).join('')}
           </select></div>`).join('')}
       </div>
-      ${notAssigned.length===0?`<div style="font-size:11px;color:var(--green);margin-top:8px">✓ Tots els disponibles estan assignats a una pista</div>`:''}
     </div>`;
+
+    return `<div class="card" style="border:2px solid ${colors[oi]}44;margin-bottom:0">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px">
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:2px;color:${colors[oi]}">OPCIÓ ${lbl}</div>
+        <button class="btn btn-primary btn-sm" onclick="confirmarOpcio(${oi})" style="background:${colors[oi]};border-color:${colors[oi]};color:var(--bg)">✅ Assignar al calendari</button>
+      </div>
+      ${pistesHTML}
+      ${resHTML}
+    </div>`;
+  }).join('');
 }
 
-function updateCustomPair(pistaIdx,jugIdx,newId){if(!customPairings)return;customPairings[pistaIdx][jugIdx]=parseInt(newId);renderConfirmacio();}
-function updateReserva(idx,val){if(!window.reservaSelected)window.reservaSelected=[null,null];window.reservaSelected[idx]=val?parseInt(val):null;renderConfirmacio();}
+function updateOpcio(oi,pi,ji,val){
+  if(!convocatoriaGuardada[convJornadaNum])convocatoriaGuardada[convJornadaNum]={};
+  const cg=convocatoriaGuardada[convJornadaNum];
+  if(!cg.opcionsManuals)cg.opcionsManuals=[null,null,null];
+  if(!cg.opcionsManuals[oi])cg.opcionsManuals[oi]={pistes:[[null,null],[null,null],[null,null]],reserves:[null,null]};
+  cg.opcionsManuals[oi].pistes[pi][ji]=val?parseInt(val):null;
+  saveState();
+  renderOpcionsManuals();
+}
 
-function confirmarConvocatoria(){
-  if(!customPairings)return;
+function updateOpcioReserva(oi,ri,val){
+  if(!convocatoriaGuardada[convJornadaNum])convocatoriaGuardada[convJornadaNum]={};
+  const cg=convocatoriaGuardada[convJornadaNum];
+  if(!cg.opcionsManuals)cg.opcionsManuals=[null,null,null];
+  if(!cg.opcionsManuals[oi])cg.opcionsManuals[oi]={pistes:[[null,null],[null,null],[null,null]],reserves:[null,null]};
+  cg.opcionsManuals[oi].reserves[ri]=val?parseInt(val):null;
+  saveState();
+  renderOpcionsManuals();
+}
+
+function confirmarOpcio(oi){
+  const saved=getOpcioData(oi);
+  if(!saved)return alert('No hi ha dades per aquesta opció');
   const activeJ=jornades.find(j=>j.num===convJornadaNum);
   if(!activeJ)return alert('No hi ha jornada seleccionada');
-  customPairings.forEach((par,pi)=>{
+  for(let pi=0;pi<3;pi++){
+    if(!saved.pistes[pi][0]||!saved.pistes[pi][1])return alert(`⚠️ Pista ${pi+1} de l'opció ${['A','B','C'][oi]} no està completa`);
+  }
+  saved.pistes.forEach((par,pi)=>{
     const p0=players.find(x=>x.id===par[0]),p1=players.find(x=>x.id===par[1]);
     if(p0&&p1&&activeJ.pistes[pi]){activeJ.pistes[pi].j1a=p0.nom;activeJ.pistes[pi].j1b=p1.nom;}
   });
+  activeJ.reserves=saved.reserves.filter(Boolean).map(id=>{const p=players.find(x=>x.id===id);return p?p.nom:null;}).filter(Boolean);
   if(activeJ.stat==='ajornada')activeJ.stat='pendent';
-  const lines=customPairings.map((par,pi)=>{
+  const lines=saved.pistes.map((par,pi)=>{
     const p0=players.find(x=>x.id===par[0]),p1=players.find(x=>x.id===par[1]);
     return `Pista ${pi+1}: ${p0?.alias||'?'} + ${p1?.alias||'?'} (${(p0?.pts||0)+(p1?.pts||0)}pts)`;
   });
-  const res=window.reservaSelected?.filter(Boolean).map(id=>players.find(p=>p.id===id)?.alias||'?').join(', ')||'Cap';
-  alert(`✅ Convocatòria J${activeJ.num} confirmada!\n\n${lines.join('\n')}\n\nReserva: ${res}\n\nLes parelles estan assignades al calendari.`);
+  const res=saved.reserves.filter(Boolean).map(id=>players.find(p=>p.id===id)?.alias||'?').join(', ')||'Cap';
+  alert(`✅ Opció ${['A','B','C'][oi]} assignada a J${activeJ.num}!\n\n${lines.join('\n')}\n\nReserva: ${res}`);
   saveState();renderCalendari();
 }
 
@@ -1610,4 +1545,8 @@ try{
   console.log('✅ Firebase connectat');
 }catch(e){
   console.warn('Firebase init error:',e);
-  showSyncBadge('📴 Mode offl
+  showSyncBadge('📴 Mode offline');
+}
+</script>
+</body>
+</html>
