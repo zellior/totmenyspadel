@@ -1391,8 +1391,8 @@ function renderOpcionsManuals(){
         avail.map(p=>`<option value="${p.id}" ${p.id===selId?'selected':''}>${p.nom.split(' ').slice(0,2).join(' ')} · ${p.pts}pts · ${p.pos}</option>`).join('');
     }
     const pistesHTML=saved.pistes.map((par,pi)=>{
-      const p0=players.find(x=>x.id===par[0]);
-      const p1=players.find(x=>x.id===par[1]);
+      const p0=players.find(x=>x.id===parseInt(par[0]));
+      const p1=players.find(x=>x.id===parseInt(par[1]));
       const total=(p0?.pts||0)+(p1?.pts||0);
       const eq=p0&&p1?parellEquilibrada(p0,p1):true;
       return `<div style="background:var(--surface2);border-left:3px solid ${p0&&p1?(eq?'var(--green)':'var(--accent2)'):'var(--border)'};border-radius:10px;padding:12px;margin-bottom:10px">
@@ -1422,7 +1422,7 @@ function renderOpcionsManuals(){
       </div>
     </div>`;
 
-    const totalOpcio=saved.pistes.reduce((sum,par)=>{const p0=players.find(x=>x.id===par[0]),p1=players.find(x=>x.id===par[1]);return sum+(p0?.pts||0)+(p1?.pts||0);},0);
+    const totalOpcio=saved.pistes.reduce((sum,par)=>{const p0=players.find(x=>x.id===parseInt(par[0])),p1=players.find(x=>x.id===parseInt(par[1]));return sum+(p0?.pts||0)+(p1?.pts||0);},0);
     return `<div class="card" style="border:2px solid ${colors[oi]}44;margin-bottom:0">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px">
         <div style="font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:2px;color:${colors[oi]}">OPCIÓ ${lbl}</div>
@@ -1466,16 +1466,16 @@ function confirmarOpcio(oi){
     if(!saved.pistes[pi][0]||!saved.pistes[pi][1])return alert(`⚠️ Pista ${pi+1} de l'opció ${['A','B','C'][oi]} no està completa`);
   }
   saved.pistes.forEach((par,pi)=>{
-    const p0=players.find(x=>x.id===par[0]),p1=players.find(x=>x.id===par[1]);
+    const p0=players.find(x=>x.id===parseInt(par[0])),p1=players.find(x=>x.id===parseInt(par[1]));
     if(p0&&p1&&activeJ.pistes[pi]){activeJ.pistes[pi].j1a=p0.nom;activeJ.pistes[pi].j1b=p1.nom;}
   });
-  activeJ.reserves=saved.reserves.filter(Boolean).map(id=>{const p=players.find(x=>x.id===id);return p?p.nom:null;}).filter(Boolean);
+  activeJ.reserves=saved.reserves.filter(Boolean).map(id=>{const p=players.find(x=>x.id===parseInt(id));return p?p.nom:null;}).filter(Boolean);
   if(activeJ.stat==='ajornada')activeJ.stat='pendent';
   const lines=saved.pistes.map((par,pi)=>{
-    const p0=players.find(x=>x.id===par[0]),p1=players.find(x=>x.id===par[1]);
+    const p0=players.find(x=>x.id===parseInt(par[0])),p1=players.find(x=>x.id===parseInt(par[1]));
     return `Pista ${pi+1}: ${p0?.alias||'?'} + ${p1?.alias||'?'} (${(p0?.pts||0)+(p1?.pts||0)}pts)`;
   });
-  const res=saved.reserves.filter(Boolean).map(id=>players.find(p=>p.id===id)?.alias||'?').join(', ')||'Cap';
+  const res=saved.reserves.filter(Boolean).map(id=>players.find(p=>p.id===parseInt(id))?.alias||'?').join(', ')||'Cap';
   alert(`✅ Opció ${['A','B','C'][oi]} assignada a J${activeJ.num}!\n\n${lines.join('\n')}\n\nReserva: ${res}`);
   saveState();renderCalendari();
 }
