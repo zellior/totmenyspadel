@@ -1374,7 +1374,7 @@ function getOpcioData(oi){
   if(!convocatoriaGuardada[convJornadaNum])convocatoriaGuardada[convJornadaNum]={};
   const cg=convocatoriaGuardada[convJornadaNum];
   if(!cg.opcionsManuals)cg.opcionsManuals=[null,null,null];
-  return cg.opcionsManuals[oi];
+  return opcioToLegacy(cg.opcionsManuals[oi]?legacyToOpcio(cg.opcionsManuals[oi]):null);
 }
 
 function renderOpcionsManuals(){
@@ -1388,7 +1388,7 @@ function renderOpcionsManuals(){
     const saved=getOpcioData(oi)||{pistes:[[null,null],[null,null],[null,null]],reserves:[null,null]};
     function mkOpts(selId){
       return `<option value="">— Selecciona —</option>`+
-        avail.map(p=>`<option value="${p.id}" ${p.id===selId?'selected':''}>${p.nom.split(' ').slice(0,2).join(' ')} · ${p.pts}pts · ${p.pos}</option>`).join('');
+        avail.map(p=>`<option value="${p.id}" ${p.id===parseInt(selId)?'selected':''}>${p.nom.split(' ').slice(0,2).join(' ')} · ${p.pts}pts · ${p.pos}</option>`).join('');
     }
     const pistesHTML=saved.pistes.map((par,pi)=>{
       const p0=players.find(x=>x.id===parseInt(par[0]));
@@ -1398,7 +1398,7 @@ function renderOpcionsManuals(){
       return `<div style="background:var(--surface2);border-left:3px solid ${p0&&p1?(eq?'var(--green)':'var(--accent2)'):'var(--border)'};border-radius:10px;padding:12px;margin-bottom:10px">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
           <span style="font-size:10px;text-transform:uppercase;letter-spacing:2px;color:var(--muted)">Pista ${pi+1}</span>
-          ${total?`<span style="font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--accent2);line-height:1">${total}<span style="font-size:11px;letter-spacing:1px;margin-left:2px">pts</span></span>`:`<span style="font-size:11px;color:var(--border)">— pts</span>`}
+          ${p0||p1?`<span style="font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--accent2);line-height:1">${total}<span style="font-size:11px;letter-spacing:1px;margin-left:2px">pts</span></span>`:`<span style="font-size:11px;color:var(--border)">— pts</span>`}
         </div>
         <div class="fg" style="margin-bottom:6px"><label>Jugador 1</label>
           <select onchange="updateOpcio(${oi},${pi},0,this.value)">${mkOpts(par[0])}</select>
@@ -1437,24 +1437,34 @@ function renderOpcionsManuals(){
   }).join('');
 }
 
+function getEmptyOpcio(){return {p0j0:null,p0j1:null,p1j0:null,p1j1:null,p2j0:null,p2j1:null,r0:null,r1:null};}
+function opcioToLegacy(o){if(!o)return {pistes:[[null,null],[null,null],[null,null]],reserves:[null,null]};
+  return {pistes:[[o.p0j0||null,o.p0j1||null],[o.p1j0||null,o.p1j1||null],[o.p2j0||null,o.p2j1||null]],reserves:[o.r0||null,o.r1||null]};}
+function legacyToOpcio(o){if(!o)return getEmptyOpcio();
+  if(o.p0j0!==undefined)return o;
+  const p=o.pistes||[[null,null],[null,null],[null,null]],r=o.reserves||[null,null];
+  return {p0j0:p[0][0]||null,p0j1:p[0][1]||null,p1j0:p[1][0]||null,p1j1:p[1][1]||null,p2j0:p[2][0]||null,p2j1:p[2][1]||null,r0:r[0]||null,r1:r[1]||null};}
+
 function updateOpcio(oi,pi,ji,val){
   if(!convocatoriaGuardada[convJornadaNum])convocatoriaGuardada[convJornadaNum]={};
   const cg=convocatoriaGuardada[convJornadaNum];
   if(!cg.opcionsManuals)cg.opcionsManuals=[null,null,null];
-  if(!cg.opcionsManuals[oi])cg.opcionsManuals[oi]={pistes:[[null,null],[null,null],[null,null]],reserves:[null,null]};
-  cg.opcionsManuals[oi].pistes[pi][ji]=val?parseInt(val):null;
-  saveState();
-  renderOpcionsManuals();
+  if(!cg.opcionsManuals[oi])cg.opcionsManuals[oi]=getEmptyOpcio();
+  const o=legacyToOpcio(cg.opcionsManuals[oi]);
+  const key=`p${pi}j${ji}`;o[key]=val?parseInt(val):null;
+  cg.opcionsManuals[oi]=o;
+  saveState();renderOpcionsManuals();
 }
 
 function updateOpcioReserva(oi,ri,val){
   if(!convocatoriaGuardada[convJornadaNum])convocatoriaGuardada[convJornadaNum]={};
   const cg=convocatoriaGuardada[convJornadaNum];
   if(!cg.opcionsManuals)cg.opcionsManuals=[null,null,null];
-  if(!cg.opcionsManuals[oi])cg.opcionsManuals[oi]={pistes:[[null,null],[null,null],[null,null]],reserves:[null,null]};
-  cg.opcionsManuals[oi].reserves[ri]=val?parseInt(val):null;
-  saveState();
-  renderOpcionsManuals();
+  if(!cg.opcionsManuals[oi])cg.opcionsManuals[oi]=getEmptyOpcio();
+  const o=legacyToOpcio(cg.opcionsManuals[oi]);
+  o[`r${ri}`]=val?parseInt(val):null;
+  cg.opcionsManuals[oi]=o;
+  saveState();renderOpcionsManuals();
 }
 
 function confirmarOpcio(oi){
