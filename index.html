@@ -1398,7 +1398,7 @@ function renderOpcionsManuals(){
       return `<div style="background:var(--surface2);border-left:3px solid ${p0&&p1?(eq?'var(--green)':'var(--accent2)'):'var(--border)'};border-radius:10px;padding:12px;margin-bottom:10px">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
           <span style="font-size:10px;text-transform:uppercase;letter-spacing:2px;color:var(--muted)">Pista ${pi+1}</span>
-          <span style="font-family:'Bebas Neue',sans-serif;font-size:16px;color:var(--gold)">${total?total+'pts':''}</span>
+          ${total?`<span style="font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--accent2);line-height:1">${total}<span style="font-size:11px;letter-spacing:1px;margin-left:2px">pts</span></span>`:`<span style="font-size:11px;color:var(--border)">— pts</span>`}
         </div>
         <div class="fg" style="margin-bottom:6px"><label>Jugador 1</label>
           <select onchange="updateOpcio(${oi},${pi},0,this.value)">${mkOpts(par[0])}</select>
