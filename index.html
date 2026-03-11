@@ -1154,10 +1154,26 @@ function openPistaCaptain(pistaId,jNumOverride){
 
 function savePista(){
   const jor=jornades.find(j=>String(j.uid||j.num)===String(jornCurrent)||String(j.num)===String(jornCurrent)),pi=jor.pistes[pistaCurrent];
+  // Guardem resultat anterior per poder desfer els punts si cal
+  const guanyatAnterior=pi.guanyat;
+  const j1aAnterior=pi.j1a,j1bAnterior=pi.j1b;
   pi.j1a=document.getElementById('mp-j1a').value;pi.j1b=document.getElementById('mp-j1b').value;
   pi.j2a=document.getElementById('mp-j2a').value;pi.j2b=document.getElementById('mp-j2b').value;
   pi.sets=document.getElementById('mp-sets').value;
   const gv=document.getElementById('mp-gua').value;pi.guanyat=gv===''?null:gv==='true';
+  // Actualitzem punts automàticament
+  // 1. Desfer punts anteriors si hi havia un resultat previ de victòria
+  if(guanyatAnterior===true){
+    [j1aAnterior,j1bAnterior].forEach(nom=>{const p=findPlayerByName(nom);if(p){p.pts=Math.max(0,p.pts-5);p.pg=Math.max(0,p.pg-1);}});
+  } else if(guanyatAnterior===false){
+    [j1aAnterior,j1bAnterior].forEach(nom=>{const p=findPlayerByName(nom);if(p){p.pp=Math.max(0,p.pp-1);}});
+  }
+  // 2. Aplicar nous punts
+  if(pi.guanyat===true){
+    [pi.j1a,pi.j1b].forEach(nom=>{const p=findPlayerByName(nom);if(p){p.pts+=5;p.pg++;p.pj=p.pg+p.pp;}});
+  } else if(pi.guanyat===false){
+    [pi.j1a,pi.j1b].forEach(nom=>{const p=findPlayerByName(nom);if(p){p.pp++;p.pj=p.pg+p.pp;}});
+  }
   const wins=jor.pistes.filter(p=>p.guanyat===true).length,losses=jor.pistes.filter(p=>p.guanyat===false).length;
   if(wins+losses===3){jor.stat='fin';jor.res={nosaltres:wins,ells:losses};}
   closeModal('modal-pista');renderCalendari();saveState();
