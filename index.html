@@ -953,7 +953,7 @@ function renderCalendari(){
             <div class="pista-team"><div class="pista-player">${avImg(findPlayerByName(pi.j1a)||{id:idx,nom:pi.j1a,foto:null},22)} ${pi.j1a}</div><div class="pista-player">${avImg(findPlayerByName(pi.j1b)||{id:idx+1,nom:pi.j1b,foto:null},22)} ${pi.j1b}</div></div>
             <div class="pista-score ${ss}">${pi.sets||'—'}</div>
             <div class="pista-team" style="text-align:right;align-items:flex-end"><div class="pista-player" style="flex-direction:row-reverse">${pi.j2a}</div><div class="pista-player" style="flex-direction:row-reverse">${pi.j2b}</div></div>
-          </div>`:
+          </div>${captainMode?`<div style="text-align:right;margin-top:8px"><button class="btn btn-secondary btn-xs" onclick="event.stopPropagation();openPistaCaptain('${pi.id}')">✎ Editar</button></div>`:''}`:
           `<div style="text-align:center;color:var(--muted);font-size:12px;padding:8px">${t('pista_pendent')}${captainMode?` <button class="btn btn-primary btn-sm" style="margin-left:8px" onclick="event.stopPropagation();openPistaCaptain('${pi.id}')">${t('assignar')}</button>`:''}</div>`;
         return `<div class="pista-card"><div class="pista-title">${t('pista')} ${idx+1} ${pg2===true?'✅':pg2===false?'❌':''}</div>${pisBody}${pi.nota?`<div style="font-size:11px;color:var(--muted);margin-top:6px">📌 ${pi.nota}</div>`:''}</div>`;
       }).join('');
