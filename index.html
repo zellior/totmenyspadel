@@ -977,7 +977,7 @@ function renderCalendari(){
           <div style="display:flex;align-items:center;gap:6px;flex-shrink:0">${editBtn}${resultHtml}<span class="jornada-chevron">▼</span></div>
         </div>
         ${ajorBanner}
-        <div class="jornada-body" id="body-${j.uid||j.num}">${pisHtml}</div>
+        <div class="jornada-body" id="body-${j.uid||j.num}">${pisHtml}${j.reserves&&j.reserves.length?`<div style="margin-top:4px;padding:10px 14px;background:var(--surface2);border-radius:9px;display:flex;align-items:center;gap:10px;flex-wrap:wrap"><span style="font-size:10px;text-transform:uppercase;letter-spacing:2px;color:var(--muted);flex-shrink:0">🔄 ${lang==='es'?'Reservas':'Reserves'}:</span>${j.reserves.map(nom=>{const rp=findPlayerByName(nom);return `<div style="display:flex;align-items:center;gap:6px">${avImg(rp||{id:0,nom,foto:null},22)}<span style="font-size:13px;font-weight:500">${nom}</span></div>`;}).join('')}</div>`:''}</div>
       </div>`;
     }).join('');
   container.innerHTML=faseTabsHtml+jorHtml+addJornadaBtn;
@@ -1422,10 +1422,14 @@ function renderOpcionsManuals(){
       </div>
     </div>`;
 
+    const totalOpcio=saved.pistes.reduce((sum,par)=>{const p0=players.find(x=>x.id===par[0]),p1=players.find(x=>x.id===par[1]);return sum+(p0?.pts||0)+(p1?.pts||0);},0);
     return `<div class="card" style="border:2px solid ${colors[oi]}44;margin-bottom:0">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px">
         <div style="font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:2px;color:${colors[oi]}">OPCIÓ ${lbl}</div>
-        <button class="btn btn-primary btn-sm" onclick="confirmarOpcio(${oi})" style="background:${colors[oi]};border-color:${colors[oi]};color:var(--bg)">✅ Assignar al calendari</button>
+        <div style="display:flex;align-items:center;gap:12px">
+          ${totalOpcio>0?`<div style="text-align:right"><div style="font-size:9px;text-transform:uppercase;letter-spacing:2px;color:var(--muted)">Total</div><div style="font-family:'Bebas Neue',sans-serif;font-size:28px;color:var(--accent2);line-height:1">${totalOpcio}pts</div></div>`:''}
+          <button class="btn btn-primary btn-sm" onclick="confirmarOpcio(${oi})" style="background:${colors[oi]};border-color:${colors[oi]};color:var(--bg)">✅ Assignar al calendari</button>
+        </div>
       </div>
       ${pistesHTML}
       ${resHTML}
