@@ -737,26 +737,30 @@ function clearState(){
 // Calcula stats d'un jugador per fase (o totes les fases si faseId=null)
 // Retorna {pj, pg, pp, pts} calculat des de les pistes confirmades
 function getPlayerStats(playerId, faseId=null){
-  const nom=players.find(p=>p.id===playerId)?.nom||'';
-  if(!nom)return {pj:0,pg:0,pp:0,pts:0};
-  const alias=nom.split(' ')[0].toLowerCase();
+  const player=players.find(p=>p.id===playerId);
+  if(!player)return {pj:0,pg:0,pp:0,pts:0};
+  const nom=player.nom.toLowerCase();
+  const parts=nom.split(' ').filter(Boolean);
   let pj=0,pg=0,pp=0;
   const jorsFiltrades=faseId!=null?jornades.filter(j=>(j.faseId||1)===faseId):jornades;
   jorsFiltrades.forEach(j=>{
     if(j.stat!=='fin')return;
     j.pistes.forEach(pi=>{
       if(!pi.j1a)return;
-      const inTeam=[pi.j1a,pi.j1b].some(n=>n&&n.toLowerCase().includes(alias));
+      // Comprovem que almenys 2 parts del nom coincideixen per evitar falsos positius
+      const inTeam=[pi.j1a,pi.j1b].some(n=>{
+        if(!n)return false;
+        const nl=n.toLowerCase();
+        const matches=parts.filter(p=>nl.includes(p)).length;
+        return matches>=2;
+      });
       if(!inTeam)return;
       pj++;
       if(pi.guanyat===true)pg++;
       else if(pi.guanyat===false)pp++;
     });
   });
-  // pts base del jugador + bonus guanys d'aquesta fase
-  // Usem directament pg*5 per partits de pista (sistema Summapadel)
-  const basePts=players.find(p=>p.id===playerId)?.pts||0;
-  // Si filtrem per fase, calculem només els pts d'aquesta fase
+  const basePts=player.pts||0;
   if(faseId!=null){
     return {pj,pg,pp,pts:pg*5};
   }
