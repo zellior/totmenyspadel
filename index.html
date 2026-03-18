@@ -267,9 +267,9 @@ nav{flex:1;padding:12px 0;overflow-y:auto;}
     <div class="page-sub">TOTMENYSPADEL 3M · Masculina Tercera · Temporada 2026</div>
   </div>
   <div class="stats-row">
-    <div class="stat-card"><div class="stat-label">Jugadors</div><div class="stat-value">22</div></div>
-    <div class="stat-card"><div class="stat-label">Jornades jugades</div><div class="stat-value w" id="d-jornades">5</div></div>
-    <div class="stat-card"><div class="stat-label">Balanç</div><div class="stat-value g">4V·1D</div></div>
+    <div class="stat-card"><div class="stat-label">Jugadors</div><div class="stat-value" id="d-jugadors">—</div></div>
+    <div class="stat-card"><div class="stat-label">Jornades jugades</div><div class="stat-value w" id="d-jornades">—</div></div>
+    <div class="stat-card"><div class="stat-label">Balanç</div><div class="stat-value g" id="d-balanc">—</div></div>
     <div class="stat-card"><div class="stat-label">Proper partit</div><div class="stat-value o" style="font-size:18px;padding-top:6px" id="d-proper">—</div></div>
   </div>
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px" class="dash-grid">
@@ -416,6 +416,7 @@ nav{flex:1;padding:12px 0;overflow-y:auto;}
 
 <script>
 const CAPTAIN_PWD="totmenys3m";
+const CAPTAIN_PWD2="padelcup26";
 
 let players=[
   {id:1,nom:"Kamal Boukhress Ben Ayad",alias:"Kamal",pts:162,pj:0,pg:0,pp:0,pos:"Revés",estat:"Actiu",sf:0,sc:0,company:"—",notes:"",foto:null},
@@ -808,12 +809,26 @@ document.querySelectorAll('.modal-overlay').forEach(m=>{m.addEventListener('clic
 function openPwd(){document.getElementById('pwd-overlay').classList.add('open');document.getElementById('pwd-input').value='';document.getElementById('pwd-error').style.display='none';}
 function closePwd(){document.getElementById('pwd-overlay').classList.remove('open');}
 function checkPwd(){
-  if(document.getElementById('pwd-input').value===CAPTAIN_PWD){captainMode=true;closePwd();renderConvocatoria();}
+  if(document.getElementById('pwd-input').value===CAPTAIN_PWD||document.getElementById('pwd-input').value===CAPTAIN_PWD2){captainMode=true;closePwd();renderConvocatoria();}
   else document.getElementById('pwd-error').style.display='block';
 }
 
 // DASHBOARD
 function renderDashboard(){
+  // Stats cards
+  const finides=jornades.filter(j=>j.stat==='fin');
+  const victòries=finides.filter(j=>j.res&&j.res.nosaltres>j.res.ells).length;
+  const derrotes=finides.filter(j=>j.res&&j.res.nosaltres<j.res.ells).length;
+  const empats=finides.filter(j=>j.res&&j.res.nosaltres===j.res.ells).length;
+  let balanc=`${victòries}V·${derrotes}D`;
+  if(empats>0)balanc+=`·${empats}E`;
+  document.getElementById('d-jugadors').textContent=players.filter(p=>p.estat==='Actiu').length;
+  document.getElementById('d-jornades').textContent=finides.length;
+  document.getElementById('d-balanc').textContent=finides.length?balanc:'—';
+  // Color balanç
+  const balEl=document.getElementById('d-balanc');
+  balEl.className='stat-value '+(victòries>=derrotes?'g':'red');
+
   const sorted=[...players].sort((a,b)=>b.pts-a.pts).slice(0,5);
   document.getElementById('d-top5').innerHTML=sorted.map((p,i)=>{
     const c=['var(--gold)','silver','#cd7f32','var(--muted)','var(--muted)'];
@@ -823,8 +838,8 @@ function renderDashboard(){
       <span style="font-family:'Bebas Neue',sans-serif;font-size:18px;color:var(--gold)">${p.pts}</span>
     </div>`;
   }).join('');
-  const rec=jornades.filter(j=>j.stat==='fin').slice(-3).reverse();
-  document.getElementById('d-results').innerHTML=rec.map(j=>{
+  const rec=finides.slice(-3).reverse();
+  document.getElementById('d-results').innerHTML=rec.length?rec.map(j=>{
     const w=j.res.nosaltres>j.res.ells;
     return `<div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border)">
       <span class="${w?'badge-green':'badge-red'} badge" style="width:22px;text-align:center;flex-shrink:0">${w?'V':'D'}</span>
@@ -832,7 +847,7 @@ function renderDashboard(){
       <div style="font-size:11px;color:var(--muted)">J${j.num} · ${j.data}</div></div>
       <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;flex-shrink:0">${j.res.nosaltres}-${j.res.ells}</div>
     </div>`;
-  }).join('');
+  }).join(''):`<div class="empty" style="padding:20px"><div style="color:var(--muted);font-size:13px">Sense resultats encara</div></div>`;
   const proper=jornades.find(j=>j.stat==='pendent');
   if(proper)document.getElementById('d-proper').textContent=proper.data.split(' ').slice(1).join('/');
 }
