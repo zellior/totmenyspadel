@@ -241,6 +241,7 @@ nav{flex:1;padding:12px 0;overflow-y:auto;}
     <div class="nav-item" data-sec="estadistiques"><span class="nav-icon">📊</span>Estadístiques</div>
     <div class="nav-item" data-sec="convocatoria"><span class="nav-icon">📋</span>Convocatòria</div>
     <div class="nav-item" data-sec="avisos"><span class="nav-icon">🔔</span>Avisos</div>
+    <div class="nav-item" data-sec="americana"><span class="nav-icon">🎯</span>Americana</div>
   </nav>
   <div style="padding:12px 16px;border-top:1px solid var(--border)">
     <button onclick="clearState()" style="width:100%;background:none;border:1px solid var(--border);border-radius:7px;color:var(--muted);font-size:10px;padding:6px;cursor:pointer;font-family:'DM Sans',sans-serif;letter-spacing:1px;transition:all .2s" onmouseover="this.style.borderColor='var(--red)';this.style.color='var(--red)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--muted)'">
@@ -257,6 +258,7 @@ nav{flex:1;padding:12px 0;overflow-y:auto;}
     <div class="bn-item" data-sec="estadistiques"><div class="bn-icon">📊</div><div class="bn-label">Stats</div></div>
     <div class="bn-item" data-sec="convocatoria"><div class="bn-icon">📋</div><div class="bn-label">Convo</div></div>
     <div class="bn-item" data-sec="avisos"><div class="bn-icon">🔔</div><div class="bn-label">Avisos</div></div>
+    <div class="bn-item" data-sec="americana"><div class="bn-icon">🎯</div><div class="bn-label">Americana</div></div>
   </div>
 </nav>
 
@@ -346,6 +348,14 @@ nav{flex:1;padding:12px 0;overflow-y:auto;}
   </div>
   <div id="avisos-list"></div>
 </section>
+<section id="sec-americana" class="section">
+  <div class="page-header">
+    <div class="page-title">AMERICANA <span>/ QUICK</span></div>
+    <div class="page-sub">Genera emparellaments aleatoris per al teu event</div>
+  </div>
+  <div id="americana-content"></div>
+</section>
+
 </main>
 </div>
 
@@ -416,7 +426,7 @@ nav{flex:1;padding:12px 0;overflow-y:auto;}
 
 <script>
 const CAPTAIN_PWD="totmenys3m";
-const CAPTAIN_PWD2="totmenys3msub";
+const CAPTAIN_PWD2="padelcup26";
 
 let players=[
   {id:1,nom:"Kamal Boukhress Ben Ayad",alias:"Kamal",pts:162,pj:0,pg:0,pp:0,pos:"Revés",estat:"Actiu",sf:0,sc:0,company:"—",notes:"",foto:null},
@@ -494,6 +504,69 @@ let jornades=[
     {id:"10-2",j1a:"",j1b:"",j2a:"",j2b:"",sets:"",guanyat:null},
     {id:"10-3",j1a:"",j1b:"",j2a:"",j2b:"",sets:"",guanyat:null},
   ]},
+  // FASE 2
+  {num:11,faseId:2,data:"Diss 09 Mai",hora:"10:30h",rival:"CT Olesa 3M",casa:true,stat:"fin",res:{nosaltres:3,ells:0},pistes:[
+    {id:"11-1",j1a:"",j1b:"",j2a:"",j2b:"",sets:"",guanyat:true},
+    {id:"11-2",j1a:"",j1b:"",j2a:"",j2b:"",sets:"",guanyat:true},
+    {id:"11-3",j1a:"",j1b:"",j2a:"",j2b:"",sets:"",guanyat:true},
+  ]},
+  {num:12,faseId:2,data:"—",hora:"—",rival:"Descans",casa:true,stat:"descans",res:null,pistes:[]},
+  {num:13,faseId:2,data:"Diss 23 Mai",hora:"10:30h",rival:"Illa Padel Xperience",casa:true,stat:"pendent",res:null,pistes:[
+    {id:"13-1",j1a:"",j1b:"",j2a:"",j2b:"",sets:"",guanyat:null},
+    {id:"13-2",j1a:"",j1b:"",j2a:"",j2b:"",sets:"",guanyat:null},
+    {id:"13-3",j1a:"",j1b:"",j2a:"",j2b:"",sets:"",guanyat:null},
+  ]},
+  {num:14,faseId:2,data:"Diss 30 Mai",hora:"10:15h",rival:"Padel Infinit 3ME",casa:false,stat:"pendent",res:null,pistes:[
+    {id:"14-1",j1a:"",j1b:"",j2a:"",j2b:"",sets:"",guanyat:null},
+    {id:"14-2",j1a:"",j1b:"",j2a:"",j2b:"",sets:"",guanyat:null},
+    {id:"14-3",j1a:"",j1b:"",j2a:"",j2b:"",sets:"",guanyat:null},
+  ]},
+  {num:15,faseId:2,data:"Diss 06 Jun",hora:"13:30h",rival:"3ra MAS Duran Segarrencs",casa:false,stat:"pendent",res:null,pistes:[
+    {id:"15-1",j1a:"",j1b:"",j2a:"",j2b:"",sets:"",guanyat:null},
+    {id:"15-2",j1a:"",j1b:"",j2a:"",j2b:"",sets:"",guanyat:null},
+    {id:"15-3",j1a:"",j1b:"",j2a:"",j2b:"",sets:"",guanyat:null},
+  ]},
+  {num:16,faseId:2,data:"Diss 13 Jun",hora:"10:30h",rival:"Raviolo R Padel",casa:true,stat:"pendent",res:null,pistes:[
+    {id:"16-1",j1a:"",j1b:"",j2a:"",j2b:"",sets:"",guanyat:null},
+    {id:"16-2",j1a:"",j1b:"",j2a:"",j2b:"",sets:"",guanyat:null},
+    {id:"16-3",j1a:"",j1b:"",j2a:"",j2b:"",sets:"",guanyat:null},
+  ]},
+  {num:17,faseId:2,data:"Diss 20 Jun",hora:"12:30h",rival:"+kpadel",casa:false,stat:"pendent",res:null,pistes:[
+    {id:"17-1",j1a:"",j1b:"",j2a:"",j2b:"",sets:"",guanyat:null},
+    {id:"17-2",j1a:"",j1b:"",j2a:"",j2b:"",sets:"",guanyat:null},
+    {id:"17-3",j1a:"",j1b:"",j2a:"",j2b:"",sets:"",guanyat:null},
+  ]},
+  {num:18,faseId:2,data:"Dium 06 Set",hora:"10:30h",rival:"CT Olesa 3M",casa:false,stat:"pendent",res:null,pistes:[
+    {id:"18-1",j1a:"",j1b:"",j2a:"",j2b:"",sets:"",guanyat:null},
+    {id:"18-2",j1a:"",j1b:"",j2a:"",j2b:"",sets:"",guanyat:null},
+    {id:"18-3",j1a:"",j1b:"",j2a:"",j2b:"",sets:"",guanyat:null},
+  ]},
+  {num:19,faseId:2,data:"—",hora:"—",rival:"Descans",casa:true,stat:"descans",res:null,pistes:[]},
+  {num:20,faseId:2,data:"Diss 19 Set",hora:"12:30h",rival:"Illa Padel Xperience",casa:false,stat:"pendent",res:null,pistes:[
+    {id:"20-1",j1a:"",j1b:"",j2a:"",j2b:"",sets:"",guanyat:null},
+    {id:"20-2",j1a:"",j1b:"",j2a:"",j2b:"",sets:"",guanyat:null},
+    {id:"20-3",j1a:"",j1b:"",j2a:"",j2b:"",sets:"",guanyat:null},
+  ]},
+  {num:21,faseId:2,data:"Diss 26 Set",hora:"10:30h",rival:"Padel Infinit 3ME",casa:true,stat:"pendent",res:null,pistes:[
+    {id:"21-1",j1a:"",j1b:"",j2a:"",j2b:"",sets:"",guanyat:null},
+    {id:"21-2",j1a:"",j1b:"",j2a:"",j2b:"",sets:"",guanyat:null},
+    {id:"21-3",j1a:"",j1b:"",j2a:"",j2b:"",sets:"",guanyat:null},
+  ]},
+  {num:22,faseId:2,data:"Diss 03 Oct",hora:"10:30h",rival:"3ra MAS Duran Segarrencs",casa:true,stat:"pendent",res:null,pistes:[
+    {id:"22-1",j1a:"",j1b:"",j2a:"",j2b:"",sets:"",guanyat:null},
+    {id:"22-2",j1a:"",j1b:"",j2a:"",j2b:"",sets:"",guanyat:null},
+    {id:"22-3",j1a:"",j1b:"",j2a:"",j2b:"",sets:"",guanyat:null},
+  ]},
+  {num:23,faseId:2,data:"Diss 10 Oct",hora:"18:30h",rival:"Raviolo R Padel",casa:false,stat:"pendent",res:null,pistes:[
+    {id:"23-1",j1a:"",j1b:"",j2a:"",j2b:"",sets:"",guanyat:null},
+    {id:"23-2",j1a:"",j1b:"",j2a:"",j2b:"",sets:"",guanyat:null},
+    {id:"23-3",j1a:"",j1b:"",j2a:"",j2b:"",sets:"",guanyat:null},
+  ]},
+  {num:24,faseId:2,data:"Diss 17 Oct",hora:"10:30h",rival:"+kpadel",casa:true,stat:"pendent",res:null,pistes:[
+    {id:"24-1",j1a:"",j1b:"",j2a:"",j2b:"",sets:"",guanyat:null},
+    {id:"24-2",j1a:"",j1b:"",j2a:"",j2b:"",sets:"",guanyat:null},
+    {id:"24-3",j1a:"",j1b:"",j2a:"",j2b:"",sets:"",guanyat:null},
+  ]},
 ];
 
 let avisos=[
@@ -509,9 +582,12 @@ let _jornadaCarregada=null; // tracking de quina jornada hem carregat ja
 
 // Fases de la lliga
 let fases=[
-  {id:1,nom:'Fase 1 — Primera volta',activa:true}
+  {id:1,nom:'Fase 1',activa:false},
+  {id:2,nom:'Fase 2',activa:true}
 ];
-let faseActiva=1; // id de la fase activa al calendari
+let faseActiva=2; // id de la fase activa al calendari
+let jugadorsExterns=[]; // jugadors externs per americanes/quicks
+let americanaConfig={pistes:3,posicions:true,seleccio:[],resultat:null}; // estat sessió americana
 
 // Idioma
 let lang='ca';
@@ -621,7 +697,7 @@ function setLang(l){
   const active=document.querySelector('.section.active');
   if(active){
     const sec=active.id.replace('sec-','');
-    ({dashboard:renderDashboard,plantilla:renderPlantilla,calendari:renderCalendari,estadistiques:renderStats,convocatoria:renderConvocatoria,avisos:renderAvisos}[sec]||function(){})();
+    ({dashboard:renderDashboard,plantilla:renderPlantilla,calendari:renderCalendari,estadistiques:renderStats,convocatoria:renderConvocatoria,avisos:renderAvisos,americana:renderAmericana}[sec]||function(){})();
   }
 }
 
@@ -634,18 +710,101 @@ let firebaseReady=false;
 
 // Dades que es sincronitzen al núvol
 function getStateObj(){
-  return {players,jornades,avisos,nextId,disponibilitatPerJornada,convocatoriaGuardada,fases,faseActiva};
+  return {players,jornades,avisos,nextId,disponibilitatPerJornada,convocatoriaGuardada,fases,faseActiva,jugadorsExterns};
+}
+
+function jornadesFase2Default(){
+  return [
+    {num:11,faseId:2,data:"Diss 09 Mai",hora:"10:30h",rival:"CT Olesa 3M",casa:true,stat:"fin",res:{nosaltres:3,ells:0},pistes:[
+      {id:"11-1",j1a:"",j1b:"",j2a:"",j2b:"",sets:"",guanyat:true},
+      {id:"11-2",j1a:"",j1b:"",j2a:"",j2b:"",sets:"",guanyat:true},
+      {id:"11-3",j1a:"",j1b:"",j2a:"",j2b:"",sets:"",guanyat:true},
+    ]},
+    {num:12,faseId:2,data:"—",hora:"—",rival:"Descans",casa:true,stat:"descans",res:null,pistes:[]},
+    {num:13,faseId:2,data:"Diss 23 Mai",hora:"10:30h",rival:"Illa Padel Xperience",casa:true,stat:"pendent",res:null,pistes:[
+      {id:"13-1",j1a:"",j1b:"",j2a:"",j2b:"",sets:"",guanyat:null},
+      {id:"13-2",j1a:"",j1b:"",j2a:"",j2b:"",sets:"",guanyat:null},
+      {id:"13-3",j1a:"",j1b:"",j2a:"",j2b:"",sets:"",guanyat:null},
+    ]},
+    {num:14,faseId:2,data:"Diss 30 Mai",hora:"10:15h",rival:"Padel Infinit 3ME",casa:false,stat:"pendent",res:null,pistes:[
+      {id:"14-1",j1a:"",j1b:"",j2a:"",j2b:"",sets:"",guanyat:null},
+      {id:"14-2",j1a:"",j1b:"",j2a:"",j2b:"",sets:"",guanyat:null},
+      {id:"14-3",j1a:"",j1b:"",j2a:"",j2b:"",sets:"",guanyat:null},
+    ]},
+    {num:15,faseId:2,data:"Diss 06 Jun",hora:"13:30h",rival:"3ra MAS Duran Segarrencs",casa:false,stat:"pendent",res:null,pistes:[
+      {id:"15-1",j1a:"",j1b:"",j2a:"",j2b:"",sets:"",guanyat:null},
+      {id:"15-2",j1a:"",j1b:"",j2a:"",j2b:"",sets:"",guanyat:null},
+      {id:"15-3",j1a:"",j1b:"",j2a:"",j2b:"",sets:"",guanyat:null},
+    ]},
+    {num:16,faseId:2,data:"Diss 13 Jun",hora:"10:30h",rival:"Raviolo R Padel",casa:true,stat:"pendent",res:null,pistes:[
+      {id:"16-1",j1a:"",j1b:"",j2a:"",j2b:"",sets:"",guanyat:null},
+      {id:"16-2",j1a:"",j1b:"",j2a:"",j2b:"",sets:"",guanyat:null},
+      {id:"16-3",j1a:"",j1b:"",j2a:"",j2b:"",sets:"",guanyat:null},
+    ]},
+    {num:17,faseId:2,data:"Diss 20 Jun",hora:"12:30h",rival:"+kpadel",casa:false,stat:"pendent",res:null,pistes:[
+      {id:"17-1",j1a:"",j1b:"",j2a:"",j2b:"",sets:"",guanyat:null},
+      {id:"17-2",j1a:"",j1b:"",j2a:"",j2b:"",sets:"",guanyat:null},
+      {id:"17-3",j1a:"",j1b:"",j2a:"",j2b:"",sets:"",guanyat:null},
+    ]},
+    {num:18,faseId:2,data:"Dium 06 Set",hora:"10:30h",rival:"CT Olesa 3M",casa:false,stat:"pendent",res:null,pistes:[
+      {id:"18-1",j1a:"",j1b:"",j2a:"",j2b:"",sets:"",guanyat:null},
+      {id:"18-2",j1a:"",j1b:"",j2a:"",j2b:"",sets:"",guanyat:null},
+      {id:"18-3",j1a:"",j1b:"",j2a:"",j2b:"",sets:"",guanyat:null},
+    ]},
+    {num:19,faseId:2,data:"—",hora:"—",rival:"Descans",casa:true,stat:"descans",res:null,pistes:[]},
+    {num:20,faseId:2,data:"Diss 19 Set",hora:"12:30h",rival:"Illa Padel Xperience",casa:false,stat:"pendent",res:null,pistes:[
+      {id:"20-1",j1a:"",j1b:"",j2a:"",j2b:"",sets:"",guanyat:null},
+      {id:"20-2",j1a:"",j1b:"",j2a:"",j2b:"",sets:"",guanyat:null},
+      {id:"20-3",j1a:"",j1b:"",j2a:"",j2b:"",sets:"",guanyat:null},
+    ]},
+    {num:21,faseId:2,data:"Diss 26 Set",hora:"10:30h",rival:"Padel Infinit 3ME",casa:true,stat:"pendent",res:null,pistes:[
+      {id:"21-1",j1a:"",j1b:"",j2a:"",j2b:"",sets:"",guanyat:null},
+      {id:"21-2",j1a:"",j1b:"",j2a:"",j2b:"",sets:"",guanyat:null},
+      {id:"21-3",j1a:"",j1b:"",j2a:"",j2b:"",sets:"",guanyat:null},
+    ]},
+    {num:22,faseId:2,data:"Diss 03 Oct",hora:"10:30h",rival:"3ra MAS Duran Segarrencs",casa:true,stat:"pendent",res:null,pistes:[
+      {id:"22-1",j1a:"",j1b:"",j2a:"",j2b:"",sets:"",guanyat:null},
+      {id:"22-2",j1a:"",j1b:"",j2a:"",j2b:"",sets:"",guanyat:null},
+      {id:"22-3",j1a:"",j1b:"",j2a:"",j2b:"",sets:"",guanyat:null},
+    ]},
+    {num:23,faseId:2,data:"Diss 10 Oct",hora:"18:30h",rival:"Raviolo R Padel",casa:false,stat:"pendent",res:null,pistes:[
+      {id:"23-1",j1a:"",j1b:"",j2a:"",j2b:"",sets:"",guanyat:null},
+      {id:"23-2",j1a:"",j1b:"",j2a:"",j2b:"",sets:"",guanyat:null},
+      {id:"23-3",j1a:"",j1b:"",j2a:"",j2b:"",sets:"",guanyat:null},
+    ]},
+    {num:24,faseId:2,data:"Diss 17 Oct",hora:"10:30h",rival:"+kpadel",casa:true,stat:"pendent",res:null,pistes:[
+      {id:"24-1",j1a:"",j1b:"",j2a:"",j2b:"",sets:"",guanyat:null},
+      {id:"24-2",j1a:"",j1b:"",j2a:"",j2b:"",sets:"",guanyat:null},
+      {id:"24-3",j1a:"",j1b:"",j2a:"",j2b:"",sets:"",guanyat:null},
+    ]},
+  ];
 }
 
 function applyState(s){
   if(s.players&&s.players.length)players=s.players;
-  if(s.jornades&&s.jornades.length)jornades=s.jornades;
+  if(s.jornades&&s.jornades.length){
+    jornades=s.jornades;
+    // Afegir jornades de Fase 2 que no existeixin a Firebase
+    const fase2Nums=[11,12,13,14,15,16,17,18,19,20,21,22,23,24];
+    fase2Nums.forEach(num=>{
+      if(!jornades.find(j=>j.num===num)){
+        const j=jornadesFase2Default().find(j=>j.num===num);
+        if(j)jornades.push(j);
+      }
+    });
+    jornades.sort((a,b)=>a.num-b.num);
+  }
   if(s.avisos)avisos=s.avisos;
   if(s.nextId)nextId=s.nextId;
   if(s.disponibilitatPerJornada)disponibilitatPerJornada=s.disponibilitatPerJornada;
   if(s.convocatoriaGuardada)convocatoriaGuardada=s.convocatoriaGuardada;
-  if(s.fases&&s.fases.length)fases=s.fases;
-  if(s.faseActiva)faseActiva=s.faseActiva;
+  if(s.fases&&s.fases.length){
+    // Merge: keep Firebase fases but add any new ones defined in code
+    const codeFases=[{id:1,nom:'Fase 1',activa:false},{id:2,nom:'Fase 2',activa:true}];
+    fases=s.fases;
+    codeFases.forEach(cf=>{if(!fases.find(f=>f.id===cf.id))fases.push(cf);});
+  }
+  if(s.jugadorsExterns)jugadorsExterns=s.jugadorsExterns;
 }
 
 // Guarda localment sempre (ràpid) + al núvol si Firebase disponible
@@ -689,7 +848,7 @@ async function loadFromFirebase(){
         // NO re-renderitzem convocatoria — l'usuari pot tenir seleccions en curs
         if(sec==='convocatoria')return;
         ({dashboard:renderDashboard,plantilla:renderPlantilla,calendari:renderCalendari,
-          estadistiques:renderStats,avisos:renderAvisos}[sec]||function(){})();
+          estadistiques:renderStats,avisos:renderAvisos,americana:renderAmericana}[sec]||function(){})();
       }
       showSyncBadge('☁️ Sincronitzat');
     }
@@ -709,7 +868,7 @@ function startRealtimeSync(){
         // NO re-renderitzem convocatoria des del listener — l'usuari pot tenir seleccions en curs
         if(sec==='convocatoria')return;
         ({dashboard:renderDashboard,plantilla:renderPlantilla,calendari:renderCalendari,
-          estadistiques:renderStats,avisos:renderAvisos}[sec]||function(){})();
+          estadistiques:renderStats,avisos:renderAvisos,americana:renderAmericana}[sec]||function(){})();
       }
     }
   },e=>console.warn('Realtime sync error:',e));
@@ -796,7 +955,7 @@ document.querySelectorAll('.nav-item,.bn-item').forEach(el=>{
     document.querySelectorAll('.nav-item,.bn-item').forEach(n=>n.classList.remove('active'));
     document.getElementById('sec-'+sec).classList.add('active');
     document.querySelectorAll(`[data-sec="${sec}"]`).forEach(n=>n.classList.add('active'));
-    ({dashboard:renderDashboard,plantilla:renderPlantilla,calendari:renderCalendari,estadistiques:renderStats,convocatoria:renderConvocatoria,avisos:renderAvisos}[sec]||function(){})();
+    ({dashboard:renderDashboard,plantilla:renderPlantilla,calendari:renderCalendari,estadistiques:renderStats,convocatoria:renderConvocatoria,avisos:renderAvisos,americana:renderAmericana}[sec]||function(){})();
   });
 });
 
@@ -1562,10 +1721,333 @@ document.getElementById('btn-ca').classList.toggle('active-lang',lang==='ca');
 document.getElementById('btn-es').classList.toggle('active-lang',lang==='es');
 renderDashboard();
 
-// PWA Service Worker
+// ============================================================
+// AMERICANA / QUICK
+// ============================================================
+function renderAmericana(){
+  const cfg=americanaConfig;
+  const capacitat=cfg.pistes*4;
+  const sel=cfg.seleccio;
+  const tot=sel.length;
+  const ok=tot===capacitat;
+  const diff=capacitat-tot;
+
+  // Tots els jugadors disponibles (equip + externs) no seleccionats
+  const equip=players.filter(p=>p.estat==='Actiu');
+  const totsDisp=[
+    ...equip.map(p=>({id:'e_'+p.id,nom:p.nom,pos:p.pos||'Ambdós',tipus:'equip'})),
+    ...jugadorsExterns.map(p=>({id:'x_'+p.id,nom:p.nom,pos:p.pos,tipus:'extern'}))
+  ].filter(p=>!sel.find(s=>s.id===p.id));
+
+  let statusHtml='';
+  if(tot===0) statusHtml=`<div style="color:var(--muted);font-size:13px">Afegeix jugadors per omplir les ${cfg.pistes} pistes (${capacitat} jugadors)</div>`;
+  else if(diff>0) statusHtml=`<div style="color:var(--accent2);font-size:13px">⚠️ Falten <b>${diff}</b> jugadors per completar les ${cfg.pistes} pistes</div>`;
+  else if(diff<0) statusHtml=`<div style="color:var(--red);font-size:13px">⚠️ Hi ha <b>${Math.abs(diff)}</b> jugadors de més. Retira'n alguns.</div>`;
+  else statusHtml=`<div style="color:var(--green);font-size:13px">✅ Llest! ${tot} jugadors per a ${cfg.pistes} pistes</div>`;
+
+  document.getElementById('americana-content').innerHTML=`
+    <!-- CONFIG -->
+    <div class="card" style="margin-bottom:18px">
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:2px;color:var(--accent);margin-bottom:16px">⚙️ CONFIGURACIÓ</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:center">
+        <div>
+          <div style="font-size:11px;text-transform:uppercase;letter-spacing:2px;color:var(--muted);margin-bottom:8px">Número de pistes</div>
+          <div style="display:flex;align-items:center;gap:12px">
+            <button onclick="amSetPistes(${cfg.pistes-1})" class="btn btn-secondary btn-sm" style="width:36px;height:36px;font-size:20px;padding:0" ${cfg.pistes<=1?'disabled':''}>−</button>
+            <span style="font-family:'Bebas Neue',sans-serif;font-size:36px;color:var(--gold);min-width:32px;text-align:center">${cfg.pistes}</span>
+            <button onclick="amSetPistes(${cfg.pistes+1})" class="btn btn-secondary btn-sm" style="width:36px;height:36px;font-size:20px;padding:0">+</button>
+          </div>
+          <div style="font-size:11px;color:var(--muted);margin-top:6px">Capacitat: <b style="color:var(--text)">${capacitat} jugadors</b></div>
+        </div>
+        <div>
+          <div style="font-size:11px;text-transform:uppercase;letter-spacing:2px;color:var(--muted);margin-bottom:8px">Posicions</div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <button onclick="amTogglePosicions(true)" class="btn btn-sm ${cfg.posicions?'btn-primary':'btn-secondary'}">🎯 Respectar posicions</button>
+            <button onclick="amTogglePosicions(false)" class="btn btn-sm ${!cfg.posicions?'btn-primary':'btn-secondary'}">🔀 Indistint</button>
+          </div>
+          ${cfg.posicions?`<div style="font-size:11px;color:var(--muted);margin-top:6px">No s'emparellarà Dreta+Dreta ni Revés+Revés</div>`:`<div style="font-size:11px;color:var(--muted);margin-top:6px">Les parelles es fan sense tenir en compte la posició</div>`}
+        </div>
+      </div>
+    </div>
+
+    <!-- JUGADORS SELECCIONATS -->
+    <div class="card" style="margin-bottom:18px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px">
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:2px;color:var(--accent)">👥 JUGADORS (${tot}/${capacitat})</div>
+        <button onclick="amOpenAfegir()" class="btn btn-primary btn-sm">+ Afegir jugador extern</button>
+      </div>
+      ${statusHtml}
+      ${sel.length?`<div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:12px">
+        ${sel.map(p=>`<div style="display:flex;align-items:center;gap:6px;background:var(--surface2);border-radius:20px;padding:5px 10px 5px 6px;border:1px solid var(--border)">
+          ${avImg(equip.find(e=>'e_'+e.id===p.id)||{id:0,nom:p.nom,foto:null},24)}
+          <span style="font-size:13px;font-weight:500">${p.nom.split(' ').slice(0,2).join(' ')}</span>
+          <span style="font-size:10px;padding:2px 6px;border-radius:10px;background:${p.pos==='Drive'?'#1a3a5c':p.pos==='Revés'?'#3a1a5c':'#1a3a2a'};color:${p.pos==='Drive'?'#4db8ff':p.pos==='Revés'?'#c084fc':'#4ade80'}">${p.pos}</span>
+          <button onclick="amTraure('${p.id}')" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:14px;line-height:1;padding:0 2px" title="Treure">✕</button>
+        </div>`).join('')}
+      </div>`:''}
+      ${totsDisp.length?`<div style="margin-top:14px;border-top:1px solid var(--border);padding-top:14px">
+        <div style="font-size:11px;text-transform:uppercase;letter-spacing:2px;color:var(--muted);margin-bottom:10px">Afegir de la llista</div>
+        <div style="display:flex;flex-wrap:wrap;gap:6px">
+          ${totsDisp.map(p=>`<button onclick="amAfegir('${p.id}')" style="display:flex;align-items:center;gap:6px;background:var(--surface2);border:1px dashed var(--border);border-radius:20px;padding:4px 10px 4px 5px;cursor:pointer;color:var(--text);font-size:12px;font-family:'DM Sans',sans-serif;transition:border-color .2s" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">
+            ${avImg(equip.find(e=>'e_'+e.id===p.id)||{id:0,nom:p.nom,foto:null},20)}
+            ${p.nom.split(' ').slice(0,2).join(' ')}
+            <span style="font-size:9px;color:var(--muted)">${p.pos}</span>
+            ${p.tipus==='extern'?`<span style="font-size:9px;color:var(--accent2)">ext</span>`:''}
+          </button>`).join('')}
+        </div>
+      </div>`:''}
+    </div>
+
+    <!-- GENERAR -->
+    <div style="text-align:center;margin-bottom:18px">
+      <button onclick="amGenerar()" class="btn btn-primary" style="font-size:16px;padding:14px 40px;${ok?'':'opacity:.5;pointer-events:none'}" ${ok?'':'disabled'}>
+        🎲 GENERAR EMPARELLAMENTS
+      </button>
+      ${!ok?`<div style="font-size:12px;color:var(--muted);margin-top:8px">${diff>0?`Falten ${diff} jugadors`:`Hi ha ${Math.abs(diff)} jugadors de més`}</div>`:''}
+    </div>
+
+    <!-- RESULTAT -->
+    <div id="am-resultat"></div>
+
+    <!-- JUGADORS EXTERNS GUARDATS -->
+    ${jugadorsExterns.length?`<div class="card" style="margin-top:18px">
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:2px;color:var(--muted);margin-bottom:12px">📋 JUGADORS EXTERNS GUARDATS</div>
+      <div style="display:flex;flex-wrap:wrap;gap:8px">
+        ${jugadorsExterns.map(p=>`<div style="display:flex;align-items:center;gap:6px;background:var(--surface2);border-radius:20px;padding:4px 10px 4px 6px;border:1px solid var(--border);font-size:12px">
+          <span>${p.nom}</span>
+          <span style="font-size:9px;color:var(--muted)">${p.pos}</span>
+          <button onclick="amEsborrarExtern(${p.id})" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:12px;padding:0 2px">✕</button>
+        </div>`).join('')}
+      </div>
+    </div>`:''}
+
+    <!-- MODAL AFEGIR EXTERN -->
+    <div id="am-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:200;display:none;align-items:center;justify-content:center">
+      <div style="background:var(--surface);border-radius:16px;padding:28px;width:90%;max-width:380px;border:1px solid var(--border)">
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:2px;margin-bottom:20px">➕ NOU JUGADOR EXTERN</div>
+        <div style="margin-bottom:14px">
+          <label style="font-size:11px;text-transform:uppercase;letter-spacing:2px;color:var(--muted);display:block;margin-bottom:6px">Nom</label>
+          <input id="am-nom" type="text" class="form-input" placeholder="Nom i cognom" style="width:100%">
+        </div>
+        <div style="margin-bottom:20px">
+          <label style="font-size:11px;text-transform:uppercase;letter-spacing:2px;color:var(--muted);display:block;margin-bottom:6px">Posició</label>
+          <div style="display:flex;gap:8px">
+            <button id="am-pos-drive" onclick="amSelPos('Drive')" class="btn btn-secondary btn-sm" style="flex:1">Drive</button>
+            <button id="am-pos-reves" onclick="amSelPos('Revés')" class="btn btn-secondary btn-sm" style="flex:1">Revés</button>
+            <button id="am-pos-ambdos" onclick="amSelPos('Ambdós')" class="btn btn-primary btn-sm" style="flex:1">Ambdós</button>
+          </div>
+        </div>
+        <div style="display:flex;gap:10px">
+          <button onclick="amTancarModal()" class="btn btn-secondary" style="flex:1">Cancel·lar</button>
+          <button onclick="amGuardarExtern()" class="btn btn-primary" style="flex:1">Guardar i afegir</button>
+        </div>
+      </div>
+    </div>
+  `;
+
+  // Restaurar resultat si existeix
+  if(cfg.resultat)amMostrarResultat(cfg.resultat);
+}
+
+let amPosActual='Ambdós';
+function amSetPistes(n){if(n<1)return;americanaConfig.pistes=n;renderAmericana();}
+function amTogglePosicions(v){americanaConfig.posicions=v;renderAmericana();}
+
+function amAfegir(id){
+  const equip=players.filter(p=>p.estat==='Actiu');
+  let jugador;
+  if(id.startsWith('e_')){
+    const p=equip.find(e=>'e_'+e.id===id);
+    if(!p)return;
+    jugador={id,nom:p.nom,pos:p.pos||'Ambdós',tipus:'equip'};
+  } else {
+    const p=jugadorsExterns.find(e=>'x_'+e.id===id);
+    if(!p)return;
+    jugador={id,nom:p.nom,pos:p.pos,tipus:'extern'};
+  }
+  americanaConfig.seleccio.push(jugador);
+  americanaConfig.resultat=null;
+  renderAmericana();
+}
+
+function amTraure(id){
+  americanaConfig.seleccio=americanaConfig.seleccio.filter(p=>p.id!==id);
+  americanaConfig.resultat=null;
+  renderAmericana();
+}
+
+function amOpenAfegir(){
+  amPosActual='Ambdós';
+  const m=document.getElementById('am-modal');
+  if(m){m.style.display='flex';document.getElementById('am-nom').value='';}
+}
+function amTancarModal(){const m=document.getElementById('am-modal');if(m)m.style.display='none';}
+function amSelPos(pos){
+  amPosActual=pos;
+  ['Drive','Revés','Ambdós'].forEach(p=>{
+    const btn=document.getElementById('am-pos-'+p.toLowerCase().replace('é','e').replace('ò','o'));
+    if(btn)btn.className='btn btn-sm '+(p===pos?'btn-primary':'btn-secondary');
+  });
+}
+
+function amGuardarExtern(){
+  const nom=document.getElementById('am-nom')?.value?.trim();
+  if(!nom)return;
+  const nou={id:Date.now(),nom,pos:amPosActual};
+  jugadorsExterns.push(nou);
+  saveState();
+  // Afegir directament a la selecció
+  americanaConfig.seleccio.push({id:'x_'+nou.id,nom:nou.nom,pos:nou.pos,tipus:'extern'});
+  americanaConfig.resultat=null;
+  renderAmericana();
+}
+
+function amEsborrarExtern(id){
+  jugadorsExterns=jugadorsExterns.filter(p=>p.id!==id);
+  americanaConfig.seleccio=americanaConfig.seleccio.filter(p=>p.id!=='x_'+id);
+  saveState();renderAmericana();
+}
+
+function amGenerar(){
+  const cfg=americanaConfig;
+  const sel=[...cfg.seleccio];
+  const nPistes=cfg.pistes;
+  const respectarPos=cfg.posicions;
+
+  // Animació de "processant"
+  document.getElementById('am-resultat').innerHTML=`
+    <div style="text-align:center;padding:40px">
+      <div id="am-spinner" style="font-size:48px;animation:amSpin 0.3s linear infinite">🎲</div>
+      <div style="margin-top:16px;font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:3px;color:var(--accent)">GENERANT EMPARELLAMENTS...</div>
+      <div id="am-progress" style="margin-top:12px;font-size:13px;color:var(--muted)">Barrejant jugadors...</div>
+    </div>
+    <style>@keyframes amSpin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}</style>
+  `;
+
+  const missatges=['Barrejant jugadors...','Aplicant aleatorietat...','Comprovant posicions...','Assignant pistes...','Últims retocs...'];
+  let mi=0;
+  const interval=setInterval(()=>{
+    mi++;
+    const el=document.getElementById('am-progress');
+    if(el&&mi<missatges.length)el.textContent=missatges[mi];
+  },320);
+
+  setTimeout(()=>{
+    clearInterval(interval);
+
+    // Algoritme d'emparellament
+    let intents=0,resultat=null;
+    while(intents<500&&!resultat){
+      intents++;
+      const barrejats=shuffle([...sel]);
+      const pistes=[];
+      let valid=true;
+
+      for(let i=0;i<nPistes;i++){
+        const j=barrejats.slice(i*4,(i+1)*4);
+        // Intentem fer parelles amb posicions equilibrades
+        if(respectarPos){
+          const parella=ferParellesEquilibrades(j);
+          if(!parella){valid=false;break;}
+          pistes.push({pista:i+1,parella1:parella[0],parella2:parella[1]});
+        } else {
+          pistes.push({pista:i+1,parella1:[j[0],j[1]],parella2:[j[2],j[3]]});
+        }
+      }
+      if(valid)resultat=pistes;
+    }
+
+    if(!resultat){
+      // No s'ha pogut fer amb restriccions — fem sense
+      const barrejats=shuffle([...sel]);
+      resultat=Array.from({length:nPistes},(_,i)=>({
+        pista:i+1,
+        parella1:[barrejats[i*4],barrejats[i*4+1]],
+        parella2:[barrejats[i*4+2],barrejats[i*4+3]]
+      }));
+      cfg.resultat={pistes:resultat,warning:true};
+    } else {
+      cfg.resultat={pistes:resultat,warning:false};
+    }
+    amMostrarResultat(cfg.resultat);
+  },1800);
+}
+
+function ferParellesEquilibrades(jugadors){
+  // Prova totes les combinacions de 2+2 per trobar la millor amb posicions equilibrades
+  const combos=[[0,1,2,3],[0,2,1,3],[0,3,1,2]];
+  const shuffled=shuffle(combos);
+  for(const [a,b,c,d] of shuffled){
+    const p1=[jugadors[a],jugadors[b]];
+    const p2=[jugadors[c],jugadors[d]];
+    if(parellaOk(p1)&&parellaOk(p2))return[p1,p2];
+  }
+  return null; // No s'ha trobat combinació vàlida
+}
+
+function parellaOk(par){
+  const pos=par.map(p=>p.pos);
+  // Invàlid: dos Dretes o dos Revesos (sense cap Ambdós)
+  if(pos[0]==='Drive'&&pos[1]==='Drive')return false;
+  if(pos[0]==='Revés'&&pos[1]==='Revés')return false;
+  return true;
+}
+
+function shuffle(arr){
+  for(let i=arr.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]];}
+  return arr;
+}
+
+function amMostrarResultat(res){
+  const colors=['var(--accent)','var(--gold)','var(--green)','var(--accent2)','#c084fc','#f472b6'];
+  document.getElementById('am-resultat').innerHTML=`
+    <div style="margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px">
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:2px;color:var(--accent)">🏆 EMPARELLAMENTS</div>
+      <div style="display:flex;gap:8px">
+        <button onclick="amGenerar()" class="btn btn-secondary btn-sm">🔄 Tornar a generar</button>
+        <button onclick="amReset()" class="btn btn-secondary btn-sm">↩ Reiniciar tot</button>
+      </div>
+    </div>
+    ${res.warning?`<div style="background:rgba(255,165,0,.1);border:1px solid var(--accent2);border-radius:10px;padding:10px 14px;font-size:12px;color:var(--accent2);margin-bottom:12px">⚠️ No s'han pogut respectar les posicions per a tots els jugadors. S'han generat emparellaments sense restriccions.</div>`:''}
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px">
+      ${res.pistes.map((p,i)=>`
+        <div style="background:var(--surface);border:2px solid ${colors[i%colors.length]}33;border-radius:14px;padding:18px;position:relative;overflow:hidden">
+          <div style="position:absolute;top:0;left:0;right:0;height:3px;background:${colors[i%colors.length]}"></div>
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:2px;color:${colors[i%colors.length]};margin-bottom:14px">PISTA ${p.pista}</div>
+          <div style="display:flex;flex-direction:column;gap:10px">
+            ${amParellaHtml(p.parella1,'A',colors[i%colors.length])}
+            <div style="text-align:center;font-size:11px;color:var(--muted);letter-spacing:2px">VS</div>
+            ${amParellaHtml(p.parella2,'B',colors[i%colors.length])}
+          </div>
+        </div>
+      `).join('')}
+    </div>
+  `;
+}
+
+function amParellaHtml(parella,lletra,color){
+  const equip=players.filter(p=>p.estat==='Actiu');
+  return `<div style="background:var(--surface2);border-radius:10px;padding:10px 12px">
+    <div style="font-size:10px;text-transform:uppercase;letter-spacing:2px;color:${color};margin-bottom:8px">Parella ${lletra}</div>
+    ${parella.map(j=>{
+      const ep=equip.find(e=>'e_'+e.id===j.id);
+      return `<div style="display:flex;align-items:center;gap:8px;padding:3px 0">
+        ${avImg(ep||{id:0,nom:j.nom,foto:null},24)}
+        <span style="font-size:13px;font-weight:500;flex:1">${j.nom.split(' ').slice(0,2).join(' ')}</span>
+        <span style="font-size:10px;padding:2px 7px;border-radius:10px;background:${j.pos==='Drive'?'#1a3a5c':j.pos==='Revés'?'#3a1a5c':'#1a3a2a'};color:${j.pos==='Drive'?'#4db8ff':j.pos==='Revés'?'#c084fc':'#4ade80'}">${j.pos}</span>
+      </div>`;
+    }).join('')}
+  </div>`;
+}
+
+function amReset(){
+  americanaConfig={pistes:americanaConfig.pistes,posicions:americanaConfig.posicions,seleccio:[],resultat:null};
+  renderAmericana();
+}
+
 if('serviceWorker' in navigator){
   window.addEventListener('load',()=>{
-    navigator.serviceWorker.register('./sw.js')
+    navigator.serviceWorker.register('sw.js')
       .then(()=>console.log('✅ SW registrat'))
       .catch(e=>console.warn('SW error:',e));
   });
